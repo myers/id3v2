@@ -1,0 +1,13 @@
+To Install:
+
+	1)  Download id3lib version 3.8.3 from http://id3lib.sourceforge.net
+	2)  tar zxvf <id3lib tarball>
+	3)  cd into id3lib.
+	4)  type "./configure"
+	5)  type "make"
+	6)  type "make install" as root
+	7)  cd back into this diretory
+	8)  type "make"
+	9)  type "make install" as root
+
+	"id3v2 --help" for information on use.

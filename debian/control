@@ -1,0 +1,11 @@
+Source: id3v2
+Section: sound
+Priority: optional
+Maintainer: Robert Woodcock <rcw@debian.org>
+Standards-Version: 3.0.1
+
+Package: id3v2
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: A command line id3v2 tag editor
+ Adds/Modifies/Removes/Views id3v2 tags, converts/lists id3v1 tags

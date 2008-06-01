@@ -1,0 +1,80 @@
+id3v2 - A command line id3v2 tag editor.  
+http://id3v2.sourceforge.net
+
+In case you didn't know id3 tags can be found on mp3 files, they can store
+infomation about what band recorded the song, the song name, etc.
+
+I wrote this because id3v1 are seriously deficient in what kind of info can
+be in them and the length of info that can be in them.  id3v2 tags are much
+better but there isn't a tool to edit them in Linux.  This is a tool to fill
+that space.
+
+See INSTALL for directions on building id3v2.
+
+As of version 0.1.10 this code is under the LGPL.  A lot of it is based off
+the examples in id3lib, but there is some code from me :).
+
+		- myers <myers_carpenter at users.sourceforge.net>
+
+thanks goes out to:
+
+Antti Andreimann - patch to write only one version of tag
+
+Vladimir Pastukhov - patch to handle General object frames w/o segfaulting
+
+Errica Crome - patch to fix genre display.
+
+Branko Radovanovic <branko-r at users.sf.net> - 
+  patch 1:
+    - No more seg faults for: --IPLS, --UFID, --PCNT, --
+    POPM. Note that these still merely print the info (i.e. the
+    file is *not* changed).
+    
+    - No more seg faults for --comment. And the new code
+    actually *sets* the comment.
+    
+    - No more seg faults for --TXXX desc:text.
+    
+    - "TSIZ results in unrecognized option" now fixed.
+    
+    Also rearranged some redundant code and made several
+    minor changes (a bit more consistent coding style,
+    spelling, etc.) 
+
+  patch 2:
+     
+    In PrintID3v1Tag() fread() in fact returns size_t (number
+    of items read), which is unsigned, and the error
+    reporting code is thus never executed. Fixed now.
+    
+    BTW, it would probably be a good idea to compile with "-
+    W -Wall pedantic". This is how I caught it.    
+  (I've changed the make file as he suggested)
+
+Jim Ursetto <ursetto at users.sf.net> -
+    Attached patch deletes id3v2 tags when passed an empty
+    string, rather than just setting them to a null string.
+    I.e. -a "" will delete the artist tag. Works for
+    comments too: -c "ID3v1 Comment::XXX" will delete the
+    default comment derived from the v1 tag.
+
+Martin Soto <soto at informatik.uni-kl.de>
+	When a file has an unknown genre (number 255) the program dies with a
+	segmentation fault.  When applied to list.cpp the patch should correct
+	that by printing "Unknown" as the genre.
+
+Aubin Paul <aubin at punknews.org>
+	patch to build under gcc 3.2
+	
+Jens Rehsack <rehsack at liwing.de>
+    I attach a few patches for the id3v2 tool you're responsible for. Maybe
+    it's useful to apply them, 'cause at the moment the implementation
+    doesn't conforms the ANSI C++ standard. (I didn't check the whole source
+    but those lines which causes the error).
+
+Warren Stevens <warren at catzooks.com>
+	Whole bunch of stuff
+
+Roberto Costa <roberto.costa at ensta.org>	
+	Patch to fix id3 genres
+	
