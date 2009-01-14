@@ -421,9 +421,10 @@ int main( int argc, char *argv[])
         }
         case ID3FID_TRACKNUM:
         {
-          // check if there is a total track number and if we only have 
-          // the track number for this file.  In this case combine them.
-          char *currentTrackNum, *newTrackNum;
+          // this ought to check if there is a total track number and
+          // combine it with the given track number, but it doesn't.
+          char *currentTrackNum = NULL;
+          char *newTrackNum = NULL;
 
           if (pFrame != NULL) 
           {
@@ -443,7 +444,7 @@ int main( int argc, char *argv[])
           
           myFrame->Field(ID3FN_TEXT) = frameList[ii].data;
           myTag.AttachFrame(myFrame);
-                                                  
+
           free(newTrackNum);
           break;
         }
