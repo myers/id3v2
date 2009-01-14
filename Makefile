@@ -2,7 +2,7 @@ all: id3v2
 
 VERSION=0.1.11
 
-PREFIX=	/usr/local
+PREFIX=	/opt/local
 CXXFLAGS+=	-I${PREFIX}/include/ -DVERSION="\"${VERSION}\"" #-DSORT_RUNTIME
 LDFLAGS+=	-L${PREFIX}/lib/ 
 
