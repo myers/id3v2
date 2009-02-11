@@ -7,10 +7,10 @@ CXXFLAGS+=	-I${PREFIX}/include/ -DVERSION="\"${VERSION}\"" #-DSORT_RUNTIME
 LDFLAGS+=	-L${PREFIX}/lib/ 
 
 id3v2:	convert.o list.o id3v2.o genre.o
-	c++ ${LDFLAGS} -pedantic -Wall -lz -lid3 -g -o $@ $^
+	${CXX} ${LDFLAGS} -pedantic -Wall -lz -lid3 -g -o $@ $^
 
 create_map: create_map.o
-	c++ -Wall -g -o $@ $^
+	${CXX} -Wall -g -o $@ $^
 
 install: all
 	install -c -s id3v2 ${PREFIX}/bin/id3v2
