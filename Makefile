@@ -7,7 +7,7 @@ CXXFLAGS+=	-I${PREFIX}/include/ -DVERSION="\"${VERSION}\"" #-DSORT_RUNTIME
 LDFLAGS+=	-L${PREFIX}/lib/ 
 
 id3v2:	convert.o list.o id3v2.o genre.o
-	${CXX} ${LDFLAGS} -pedantic -Wall -lz -lid3 -g -o $@ $^
+	${CXX} ${LDFLAGS} -pedantic -Wall -g -o $@ $^ -lz -lid3
 
 create_map: create_map.o
 	${CXX} -Wall -g -o $@ $^
