@@ -73,7 +73,10 @@ int PrintInformation(char *sFileName, const ID3_Tag &myTag, int rfc822)
     { 
       const char* desc = myFrame->GetDescription();
       if (!desc) desc = "";
-      std::cout << myFrame->GetTextID() << " (" << desc << "): ";
+      if (rfc822)
+        std::cout << myFrame->GetTextID() << ": ";
+      else
+        std::cout << myFrame->GetTextID() << " (" << desc << "): ";
       ID3_FrameID eFrameID = myFrame->GetID();
 
       switch (eFrameID)
