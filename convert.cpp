@@ -66,6 +66,15 @@ void ConvertTag(int argc, char *argv[], int optind)
       luint nTags;
 
       nTags = myTag.Update(ID3TT_ID3V2);
+
+      if (nTags == ID3TT_NONE)
+      {
+	      std::cout << std::endl;
+	      perror("id3v2");
+	      std::cerr << "Tags could not be converted" << std::endl;
+	      continue;
+      }
+
       std::cout << " converted ";
       std::cout << std::endl;
     }
