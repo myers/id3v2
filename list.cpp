@@ -52,7 +52,7 @@ void PrintGenreList()
     printf("%3d: %s\n", ii, GetGenreFromNum(ii));
 }
 
-int PrintInformation(char *sFileName, const ID3_Tag &myTag)
+int PrintInformation(char *sFileName, const ID3_Tag &myTag, int rfc822)
 {
   bool firstLine = true;
   const ID3_Frame * myFrame;
@@ -62,7 +62,10 @@ int PrintInformation(char *sFileName, const ID3_Tag &myTag)
     myFrame = Iter->GetNext();
 
     if(firstLine) {
-      std::cout << "id3v2 tag info for " << sFileName << ":" << std::endl;
+      if (rfc822)
+        std::cout << "\nFilename: " << sFileName << std::endl;
+      else
+        std::cout << "id3v2 tag info for " << sFileName << ":" << std::endl;
       firstLine = false;
     }
 
@@ -373,17 +376,20 @@ void ListTag(int argc, char *argv[], int optind, int rfc822)
     bool tags = false;
     ID3_Tag myTag;
 
-    ret = PrintID3v1Tag(argv[nIndex]);
-    if (ret == -1)
+    if (!rfc822)
     {
-      continue;
-    } 
-    else if(ret == 0)
-    {
-      tags = true;
+      ret = PrintID3v1Tag(argv[nIndex]);
+      if (ret == -1)
+      {
+        continue;
+      }
+      else if(ret == 0)
+      {
+        tags = true;
+      }
     }
     myTag.Link(argv[nIndex], ID3TT_ID3V2);
-    if(!PrintInformation(argv[nIndex],myTag))
+    if(!PrintInformation(argv[nIndex],myTag,rfc822))
       tags = true;
     if(!tags)
       std::cout << argv[nIndex] << ": No ID3 tag" << std::endl;
