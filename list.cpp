@@ -2,12 +2,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-//  
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-//  
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -40,7 +40,7 @@ void PrintFrameHelp(char *sName)
 {
     for(int ii = 0; ii < frameTableCount - 1; ii++ )
     {
-      std::cout << "    --" << frameTable[ii].frameName << "    " 
+      std::cout << "    --" << frameTable[ii].frameName << "    "
            << frameTable[ii].frameLongName << std::endl;
     }
     return;
@@ -70,7 +70,7 @@ int PrintInformation(char *sFileName, const ID3_Tag &myTag, int rfc822)
     }
 
     if (NULL != myFrame)
-    { 
+    {
       const char* desc = myFrame->GetDescription();
       if (!desc) desc = "";
       if (rfc822)
@@ -142,8 +142,8 @@ int PrintInformation(char *sFileName, const ID3_Tag &myTag, int rfc822)
         }
         case ID3FID_USERTEXT:
         {
-          char 
-            *sText = ID3_GetString(myFrame, ID3FN_TEXT), 
+          char
+            *sText = ID3_GetString(myFrame, ID3FN_TEXT),
             *sDesc = ID3_GetString(myFrame, ID3FN_DESCRIPTION);
           std::cout << "(" << sDesc << "): " << sText << std::endl;
           delete [] sText;
@@ -153,9 +153,9 @@ int PrintInformation(char *sFileName, const ID3_Tag &myTag, int rfc822)
         case ID3FID_COMMENT:
         case ID3FID_UNSYNCEDLYRICS:
         {
-          char 
-            *sText = ID3_GetString(myFrame, ID3FN_TEXT), 
-            *sDesc = ID3_GetString(myFrame, ID3FN_DESCRIPTION), 
+          char
+            *sText = ID3_GetString(myFrame, ID3FN_TEXT),
+            *sDesc = ID3_GetString(myFrame, ID3FN_DESCRIPTION),
             *sLang = ID3_GetString(myFrame, ID3FN_LANGUAGE);
           std::cout << "(" << sDesc << ")[" << sLang << "]: "
                << sText << std::endl;
@@ -180,7 +180,7 @@ int PrintInformation(char *sFileName, const ID3_Tag &myTag, int rfc822)
         }
         case ID3FID_WWWUSER:
         {
-          char 
+          char
             *sURL = ID3_GetString(myFrame, ID3FN_URL),
             *sDesc = ID3_GetString(myFrame, ID3FN_DESCRIPTION);
           std::cout << "(" << sDesc << "): " << sURL << std::endl;
@@ -224,12 +224,12 @@ int PrintInformation(char *sFileName, const ID3_Tag &myTag, int rfc822)
         }
         case ID3FID_GENERALOBJECT:
         {
-          char 
-          *sMimeType = ID3_GetString(myFrame, ID3FN_MIMETYPE), 
-          *sDesc = ID3_GetString(myFrame, ID3FN_DESCRIPTION), 
+          char
+          *sMimeType = ID3_GetString(myFrame, ID3FN_MIMETYPE),
+          *sDesc = ID3_GetString(myFrame, ID3FN_DESCRIPTION),
           *sFileName = ID3_GetString(myFrame, ID3FN_FILENAME);
           size_t nDataSize = myFrame->GetField(ID3FN_DATA)->Size();
-          std::cout << "(" << sDesc << ")[" 
+          std::cout << "(" << sDesc << ")["
                << sFileName << "]: " << sMimeType << ", " << nDataSize
                << " bytes" << std::endl;
           delete [] sMimeType;
@@ -258,7 +258,7 @@ int PrintInformation(char *sFileName, const ID3_Tag &myTag, int rfc822)
           size_t
             nCounter = myFrame->Field(ID3FN_COUNTER).Get(),
             nRating = myFrame->Field(ID3FN_RATING).Get();
-          std::cout << sEmail << ", counter=" 
+          std::cout << sEmail << ", counter="
                << nCounter << " rating=" << nRating;
           delete [] sEmail;
           break;
@@ -267,7 +267,7 @@ int PrintInformation(char *sFileName, const ID3_Tag &myTag, int rfc822)
         case ID3FID_GROUPINGREG:
         {
           char *sOwner = ID3_GetString(myFrame, ID3FN_OWNER);
-          size_t 
+          size_t
             nSymbol = myFrame->Field(ID3FN_ID).Get(),
             nDataSize = myFrame->Field(ID3FN_DATA).Size();
           std::cout << "(" << nSymbol << "): " << sOwner
@@ -302,12 +302,12 @@ int PrintInformation(char *sFileName, const ID3_Tag &myTag, int rfc822)
   }
   if(firstLine)
     return 1;
-  
+
   return 0;
 }
 
-int PrintID3v1Tag(char *sFileName) 
-// code from id3 
+int PrintID3v1Tag(char *sFileName)
+// code from id3
 {
   struct id3 {
     char tag[3];
@@ -321,7 +321,7 @@ int PrintID3v1Tag(char *sFileName)
     unsigned char genre;
   } id3v1tag;
   FILE *fp;
-  
+
   fp = fopen(sFileName, "r"); /* read only */
 
   if (fp == NULL) { /* file didn't open */
@@ -331,14 +331,14 @@ int PrintID3v1Tag(char *sFileName)
   }
   if (fseek(fp, -128, SEEK_END) < 0) {
     /* problem rewinding */
-  } else { /* we rewound successfully */ 
+  } else { /* we rewound successfully */
     if (fread(&id3v1tag, 128, 1, fp) != 1) {
       /* read error */
       fprintf(stderr, "fread: %s: ", sFileName);
       perror("");
     }
   }
-    
+
   fclose(fp);
 
     /* This simple detection code has a 1 in 16777216
@@ -346,27 +346,27 @@ int PrintID3v1Tag(char *sFileName)
      * bytes of your mp3 if it isn't tagged. ID3 ain't
      * world peace, live with it.
      */
-    
-  
+
+
   if (!strncmp(id3v1tag.tag, "TAG", 3))
   {
     std::cout << "id3v1 tag info for " << sFileName << ":" << std::endl;
     printf("Title  : %-30.30s  Artist: %-30.30s\n",
             id3v1tag.title, id3v1tag.artist);
     printf("Album  : %-30.30s  Year: %-4.4s, Genre: %s (%d)\n",
-            id3v1tag.album, id3v1tag.year, 
+            id3v1tag.album, id3v1tag.year,
             (id3v1tag.genre < GetGenreCount())
-            ? GetGenreFromNum(id3v1tag.genre) : 
+            ? GetGenreFromNum(id3v1tag.genre) :
             "Unknown", id3v1tag.genre);
     if (!id3v1tag.comment[28])
-      printf("Comment: %-28.28s    Track: %d\n", 
+      printf("Comment: %-28.28s    Track: %d\n",
              id3v1tag.comment, id3v1tag.comment[29]);
     else
       printf("Comment: %-30.30s\n", id3v1tag.comment);
-  } 
-  else 
+  }
+  else
   {
-    return 1;     
+    return 1;
   }
   return 0;
 }

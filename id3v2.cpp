@@ -1,7 +1,7 @@
 #if defined HAVE_CONFIG_H
 #include <config.h>
 #endif
-                                                                                
+
 #include <cstdio>
 #include <iostream>
 #include <cstring>
@@ -20,7 +20,7 @@
 
 #define MAXNOFRAMES 1000
 
-#define TMPSIZE 255    
+#define TMPSIZE 255
 
 /* Write both tags by default */
 flags_t UpdFlags = ID3TT_ALL;
@@ -30,27 +30,28 @@ void PrintUsage(char *sName)
   std::cout << "Usage: " << sName << " [OPTION]... [FILE]..." << std::endl;
   std::cout << "Adds/Modifies/Removes/Views id3v2 tags, modifies/converts/lists id3v1 tags" << std::endl;
   std::cout << std::endl;
-  std::cout << "  -h,  --help               Display this help and exit" << std::endl;
-  std::cout << "  -f,  --list-frames        Display all possible frames for id3v2" << std::endl;
-  std::cout << "  -L,  --list-genres        Lists all id3v1 genres" << std::endl;
-  std::cout << "  -v,  --version            Display version information and exit" << std::endl;
-  std::cout << "  -l,  --list               Lists the tag(s) on the file(s)" << std::endl;
-  std::cout << "  -R,  --list-rfc822        Lists using an rfc822-style format for output" << std::endl;
-  std::cout << "  -d,  --delete-v2          Deletes id3v2 tags" << std::endl;
-  std::cout << "  -s,  --delete-v1          Deletes id3v1 tags" << std::endl;
-  std::cout << "  -D,  --delete-all         Deletes both id3v1 and id3v2 tags" << std::endl;
-  std::cout << "  -C,  --convert            Converts id3v1 tag to id3v2" << std::endl;
-  std::cout << "  -1,  --id3v1-only         Writes only id3v1 tag" << std::endl;
-  std::cout << "  -2,  --id3v2-only         Writes only id3v2 tag" << std::endl;
-  std::cout << "  -a,  --artist  \"ARTIST\"   Set the artist information" << std::endl;
-  std::cout << "  -A,  --album   \"ALBUM\"    Set the album title information" << std::endl;
-  std::cout << "  -t,  --song    \"SONG\"     Set the song title information" << std::endl;
+  std::cout << "  -h,  --help                  Display this help and exit" << std::endl;
+  std::cout << "  -f,  --list-frames           Display all possible frames for id3v2" << std::endl;
+  std::cout << "  -L,  --list-genres           Lists all id3v1 genres" << std::endl;
+  std::cout << "  -v,  --version               Display version information and exit" << std::endl;
+  std::cout << "  -l,  --list                  Lists the tag(s) on the file(s)" << std::endl;
+  std::cout << "  -R,  --list-rfc822           Lists using an rfc822-style format for output" << std::endl;
+  std::cout << "  -x   --delete-frame \"FRAME\"  Deletes the id3v2 frame FRAME" << std::endl;
+  std::cout << "  -d,  --delete-v2             Deletes id3v2 tags" << std::endl;
+  std::cout << "  -s,  --delete-v1             Deletes id3v1 tags" << std::endl;
+  std::cout << "  -D,  --delete-all            Deletes both id3v1 and id3v2 tags" << std::endl;
+  std::cout << "  -C,  --convert               Converts id3v1 tag to id3v2" << std::endl;
+  std::cout << "  -1,  --id3v1-only            Writes only id3v1 tag" << std::endl;
+  std::cout << "  -2,  --id3v2-only            Writes only id3v2 tag" << std::endl;
+  std::cout << "  -a,  --artist  \"ARTIST\"      Set the artist information" << std::endl;
+  std::cout << "  -A,  --album   \"ALBUM\"       Set the album title information" << std::endl;
+  std::cout << "  -t,  --song    \"SONG\"        Set the song title information" << std::endl;
   std::cout << "  -c,  --comment \"DESCRIPTION\":\"COMMENT\":\"LANGUAGE\"  "<< std::endl
-       << "                            Set the comment information (both" << std::endl
-       << "                             description and language optional)" << std::endl;    
-  std::cout << "  -g,  --genre   num        Set the genre number" << std::endl;
-  std::cout << "  -y,  --year    num        Set the year" << std::endl;
-  std::cout << "  -T,  --track   num/num    Set the track number/(optional) total tracks" << std::endl;
+       << "                               Set the comment information (both" << std::endl
+       << "                               description and language optional)" << std::endl;
+  std::cout << "  -g,  --genre   num           Set the genre number" << std::endl;
+  std::cout << "  -y,  --year    num           Set the year" << std::endl;
+  std::cout << "  -T,  --track   num/num       Set the track number/(optional) total tracks" << std::endl;
   std::cout << std::endl;
   std::cout << "You can set the value for any id3v2 frame by using '--' and then frame id" << std::endl;
   std::cout << "For example: " << std::endl;
@@ -66,7 +67,7 @@ void PrintVersion(char *sName)
   std::cout << sName << " " << VERSION << std::endl;
   std::cout << "Uses " << ID3LIB_FULL_NAME << std::endl << std::endl;
 
-  std::cout << "This program adds/modifies/removes/views id3v2 tags, " << std::endl 
+  std::cout << "This program adds/modifies/removes/views id3v2 tags, " << std::endl
        << "and can convert from id3v1 tags" << std::endl;
 }
 
@@ -75,7 +76,8 @@ extern void ListTag(int argc, char *argv[], int optind, int rfc822);
 extern void PrintFrameHelp(char *sName);
 extern void PrintGenreList();
 
-extern void DeleteTag(int argc, char *argv[], int optind, int whichTags); 
+extern void DeleteSpecificTag(int argc, char *argv[], char* optarg, int optind, int whichTags);
+extern void DeleteTag(int argc, char *argv[], int optind, int whichTags);
 extern void ConvertTag(int argc, char *argv[], int optind);
 
 #ifdef SORT_RUNTIME
@@ -89,37 +91,38 @@ int main( int argc, char *argv[])
   int ii;
   char tmp[TMPSIZE];
   FILE * fp;
-  
+
   struct frameInfo {
     enum ID3_FrameID id;
     char *data;
   } frameList[MAXNOFRAMES];
-  
+
   int frameCounter = 0;
-  
+
   while (true)
   {
     int option_index = 0;
     int iLongOpt = 0;
     int optFrameID = ID3FID_NOFRAME;
-    static struct option long_options[] = 
-    { 
+    static struct option long_options[] =
+    {
     // help and info
       { "help",    no_argument,       &iLongOpt, 'h' },
       { "list-frames",
                    no_argument,       &iLongOpt, 'f' },
-      { "list-genres",   
+      { "list-genres",
                   no_argument,        &iLongOpt, 'L' },
       { "version", no_argument,       &iLongOpt, 'v' },
 
     // list / remove / convert
       { "list",   no_argument,        &iLongOpt, 'l' },
-      { "list-rfc822",   
+      { "list-rfc822",
                    no_argument,       &iLongOpt, 'R' },
+      { "delete-frame", required_argument, &iLongOpt, 'x' },
       { "delete-v2",  no_argument,    &iLongOpt, 'd' },
-      { "delete-v1",  
+      { "delete-v1",
                    no_argument,       &iLongOpt, 's' },
-      { "delete-all",  
+      { "delete-all",
                    no_argument,       &iLongOpt, 'D' },
       { "convert", no_argument,       &iLongOpt, 'C' },
       { "id3v1-only", no_argument,       &iLongOpt, '1' },
@@ -216,7 +219,7 @@ int main( int argc, char *argv[])
     {
       PrintUsage(argv[0]);
       exit(0);
-    } 
+    }
     else if (iOpt == -1)
       break;
     argCounter++;
@@ -235,24 +238,26 @@ int main( int argc, char *argv[])
                 frameList[frameCounter].data = optarg;
                 frameCounter++;
                 break;
-      case '?': 
+      case '?':
       case 'h': PrintUsage(argv[0]);    exit (0);
       case 'f': PrintFrameHelp(argv[0]);exit (0);
       case 'L': PrintGenreList();       exit (0);
       case 'v': PrintVersion(argv[0]);  exit (0);
 
     // listing / remove / convert -- see list.cpp and convert.cpp
-      case 'l': ListTag(argc, argv, optind, 0);    
+      case 'l': ListTag(argc, argv, optind, 0);
                                         exit (0);
-      case 'R': ListTag(argc, argv, optind, 1);    
+      case 'R': ListTag(argc, argv, optind, 1);
                                         exit (0);
-      case 'd': DeleteTag(argc, argv, optind, 2);    
+      case 'x': DeleteSpecificTag(argc, argv, optarg, optind, 2);
                                         exit (0);
-      case 's': DeleteTag(argc, argv, optind, 1);    
+      case 'd': DeleteTag(argc, argv, optind, 2);
                                         exit (0);
-      case 'D': DeleteTag(argc, argv, optind, 0);    
+      case 's': DeleteTag(argc, argv, optind, 1);
                                         exit (0);
-      case 'C': ConvertTag(argc, argv, optind);    
+      case 'D': DeleteTag(argc, argv, optind, 0);
+                                        exit (0);
+      case 'C': ConvertTag(argc, argv, optind);
                                         exit (0);
       case '1':
 		UpdFlags = ID3TT_ID3V1;
@@ -260,28 +265,28 @@ int main( int argc, char *argv[])
       case '2':
 		UpdFlags = ID3TT_ID3V2;
 		break;
-    // Tagging stuff 
-      case 'a': 
+    // Tagging stuff
+      case 'a':
                 frameList[frameCounter].id   = ID3FID_LEADARTIST;
                 frameList[frameCounter].data = optarg;
                 frameCounter++;
                 break;
-      case 'A': 
+      case 'A':
                 frameList[frameCounter].id   = ID3FID_ALBUM;
                 frameList[frameCounter].data = optarg;
                 frameCounter++;
                 break;
-      case 't': 
+      case 't':
                 frameList[frameCounter].id   = ID3FID_TITLE;
                 frameList[frameCounter].data = optarg;
                 frameCounter++;
                 break;
-      case 'c': 
+      case 'c':
                 frameList[frameCounter].id   = ID3FID_COMMENT;
                 frameList[frameCounter].data = optarg;
                 frameCounter++;
                 break;
-      case 'g': 
+      case 'g':
           {
                 int genre_id = 255;
                 char *genre_str;
@@ -299,47 +304,47 @@ int main( int argc, char *argv[])
                 frameCounter++;
           }
                 break;
-      case 'y': 
+      case 'y':
                 frameList[frameCounter].id   = ID3FID_YEAR;
                 frameList[frameCounter].data = optarg;
                 frameCounter++;
                 break;
-      case 'T': 
+      case 'T':
                 frameList[frameCounter].id   = ID3FID_TRACKNUM;
                 frameList[frameCounter].data = optarg;
                 frameCounter++;
                 break;
     // other tags
-    
+
       default:
 		std::cerr << "This isn't supposed to happen" << std::endl;
                 exit(1);
     }
   }
-  
+
   // loop thru the files
-  if (optind == argc) 
+  if (optind == argc)
   {
 	  std::cerr << "No file to work on." << std::endl;
     exit(1);
   }
-  
+
   for (size_t nIndex = optind; (unsigned int) nIndex < argc; nIndex++)
   {
     ID3_Tag myTag;
     struct stat filestat;
-    
+
     // std::cout << "Tagging " << argv[nIndex] << ": ";
 
     // fix me - not checking to see if we can link to it
-    
-    
-    if (stat(argv[nIndex], &filestat)) 
+
+
+    if (stat(argv[nIndex], &filestat))
     {
       std::cerr << "Couldn't stat file '" << argv[nIndex] << "'\n";
       break;
     }
-    
+
     /* cludgy to check if we have the proper perms */
     fp = fopen(argv[nIndex], "r+");
     if (fp == NULL) { /* file didn't open */
@@ -353,7 +358,7 @@ int main( int argc, char *argv[])
     ret = myTag.Link(argv[nIndex] /*, ID3TT_ID3V2 */);
 
     // loop thru the frames we need to add/modify
-    for (ii = 0; ii < frameCounter; ii++) 
+    for (ii = 0; ii < frameCounter; ii++)
     {
       ID3_Frame *myFrame;
       myFrame = new ID3_Frame;
@@ -362,12 +367,12 @@ int main( int argc, char *argv[])
          std::cout << "\nOut of memory\n" << std::endl;
          exit(1);
       }
-      
+
       myFrame->SetID(frameList[ii].id);
-      
+
       ID3_Frame *pFrame;
       pFrame = myTag.Find(frameList[ii].id);
-                          
+
       switch (frameList[ii].id)
       {
       //  strings
@@ -409,7 +414,7 @@ int main( int argc, char *argv[])
         case ID3FID_ENCODERSETTINGS:
         case ID3FID_YEAR:
         {
-          if (pFrame != NULL) 
+          if (pFrame != NULL)
           {
             myTag.RemoveFrame(pFrame);
           }
@@ -426,13 +431,13 @@ int main( int argc, char *argv[])
           char *currentTrackNum = NULL;
           char *newTrackNum = NULL;
 
-          if (pFrame != NULL) 
+          if (pFrame != NULL)
           {
             currentTrackNum = ID3_GetString(pFrame, ID3FN_TEXT);
-            if (*currentTrackNum == '/') 
+            if (*currentTrackNum == '/')
             {
-              newTrackNum = (char *)malloc(strlen(currentTrackNum) 
-                                   + strlen(frameList[ii].data)); 
+              newTrackNum = (char *)malloc(strlen(currentTrackNum)
+                                   + strlen(frameList[ii].data));
               strcpy(newTrackNum, frameList[ii].data);
               strcat(newTrackNum, currentTrackNum);
             }
@@ -441,7 +446,7 @@ int main( int argc, char *argv[])
               myTag.RemoveFrame(pFrame);
             }
           }
-          
+
           myFrame->Field(ID3FN_TEXT) = frameList[ii].data;
           myTag.AttachFrame(myFrame);
 
@@ -450,7 +455,7 @@ int main( int argc, char *argv[])
         }
         case ID3FID_USERTEXT:
         {
-          if (pFrame != NULL) 
+          if (pFrame != NULL)
           {
             myTag.RemoveFrame(pFrame);
           }
@@ -459,7 +464,7 @@ int main( int argc, char *argv[])
           // descrip empty
           char *text;
           text = strchr(frameList[ii].data, ':');
-          if (text == NULL) 
+          if (text == NULL)
           {
             myFrame->Field(ID3FN_TEXT) = frameList[ii].data;
           } else {
@@ -471,7 +476,7 @@ int main( int argc, char *argv[])
           if (strlen(ID3_GetString(myFrame, ID3FN_TEXT)) > 0) {
             myTag.AttachFrame(myFrame);
           }
-          
+
           break;
         }
         case ID3FID_COMMENT:
@@ -481,7 +486,7 @@ int main( int argc, char *argv[])
           // descrip/lang empty
           char *text;
           text = strchr(frameList[ii].data, ':');
-          if (text == NULL) 
+          if (text == NULL)
           {
             myFrame->Field(ID3FN_TEXT) = frameList[ii].data;
           } else {
@@ -489,7 +494,7 @@ int main( int argc, char *argv[])
           	text++;
           	char *lang;
           	lang = strchr(text, ':');
-          	if (lang == NULL) 
+          	if (lang == NULL)
           	{
           	  myFrame->Field(ID3FN_DESCRIPTION) = frameList[ii].data;
           	  myFrame->Field(ID3FN_TEXT) = text;
@@ -507,15 +512,15 @@ int main( int argc, char *argv[])
                << ID3_GetString(myFrame, ID3FN_LANGUAGE) << std::endl;
           */
 
-          // now try and find a comment/lyrics with the same descript 
+          // now try and find a comment/lyrics with the same descript
           // and lang as what we have
           ID3_Frame *pFirstFrame = NULL;
           do {
-            // if pFrame is NULL, either there were no comments/lyrics 
-            // to begin with, or we removed them all in the process          
+            // if pFrame is NULL, either there were no comments/lyrics
+            // to begin with, or we removed them all in the process
             if (pFrame == NULL) break;
-            
-            if (pFirstFrame == NULL) 
+
+            if (pFirstFrame == NULL)
             {
               pFirstFrame = pFrame;
             }
@@ -525,10 +530,10 @@ int main( int argc, char *argv[])
             char *tmp_lang = ID3_GetString(pFrame, ID3FN_LANGUAGE);
             char *tmp_my_lang = ID3_GetString(myFrame, ID3FN_LANGUAGE);
             if ((strcmp(tmp_desc, tmp_my_desc) == 0) &&
-                (strcmp(tmp_lang, tmp_my_lang) == 0)) 
+                (strcmp(tmp_lang, tmp_my_lang) == 0))
             {
               myTag.RemoveFrame(pFrame);
-              if (pFrame == pFirstFrame) 
+              if (pFrame == pFirstFrame)
               {
                 pFirstFrame = NULL;
               }
@@ -537,14 +542,14 @@ int main( int argc, char *argv[])
             delete [] tmp_my_desc;
             delete [] tmp_lang;
             delete [] tmp_my_lang;
-            
+
             // get the next frame until it wraps around
           } while ((pFrame = myTag.Find(frameList[ii].id)) != pFirstFrame);
-          
+
           if (strlen(ID3_GetString(myFrame, ID3FN_TEXT)) > 0) {
             myTag.AttachFrame(myFrame);
           }
-          
+
           break;
         }
         case ID3FID_WWWAUDIOFILE:
@@ -556,24 +561,24 @@ int main( int argc, char *argv[])
         case ID3FID_WWWPAYMENT:
         case ID3FID_WWWRADIOPAGE:
         {
-          if (pFrame != NULL) 
+          if (pFrame != NULL)
           {
             char *sURL = ID3_GetString(pFrame, ID3FN_URL);
             if (strcmp(frameList[ii].data, sURL) == 0)
-              myTag.RemoveFrame(pFrame);  
+              myTag.RemoveFrame(pFrame);
           }
 
           if (strlen(frameList[ii].data) > 0) {
             myFrame->Field(ID3FN_URL) = frameList[ii].data;
             myTag.AttachFrame(myFrame);
           }
-                  
+
           break;
-                                
+
         }
         case ID3FID_WWWUSER:
         {
-          char 
+          char
             *sURL = ID3_GetString(myFrame, ID3FN_URL),
             *sDesc = ID3_GetString(myFrame, ID3FN_DESCRIPTION);
           std::cout << "(" << sDesc << "): " << sURL << std::endl;
@@ -591,7 +596,7 @@ int main( int argc, char *argv[])
             std::cout << sPeople;
             delete [] sPeople;
             if (nIndex < nItems)
-            { 
+            {
               std::cout << ", ";
             }
           }
@@ -617,13 +622,13 @@ int main( int argc, char *argv[])
         }
         case ID3FID_GENERALOBJECT:
         {
-          char 
-            *sMimeType = ID3_GetString(myFrame, ID3FN_TEXT), 
-            *sDesc = ID3_GetString(myFrame, ID3FN_DESCRIPTION), 
+          char
+            *sMimeType = ID3_GetString(myFrame, ID3FN_TEXT),
+            *sDesc = ID3_GetString(myFrame, ID3FN_DESCRIPTION),
             *sFileName = ID3_GetString(myFrame, ID3FN_FILENAME);
-          size_t 
+          size_t
           nDataSize = myFrame->Field(ID3FN_DATA).Size();
-          std::cout << "(" << sDesc << ")[" 
+          std::cout << "(" << sDesc << ")["
               << sFileName << "]: " << sMimeType << ", " << nDataSize
               << " bytes" << std::endl;
           delete [] sMimeType;
@@ -633,8 +638,8 @@ int main( int argc, char *argv[])
         }
         case ID3FID_UNIQUEFILEID:
         {
-          if (pFrame != NULL) 
-          {       
+          if (pFrame != NULL)
+          {
             char *sOwner = ID3_GetString(pFrame, ID3FN_TEXT);
             size_t nDataSize = pFrame->Field(ID3FN_DATA).Size();
             std::cout << sOwner << ", " << nDataSize
@@ -645,7 +650,7 @@ int main( int argc, char *argv[])
         }
         case ID3FID_PLAYCOUNTER:
         {
-          if (pFrame != NULL) 
+          if (pFrame != NULL)
           {
             size_t nCounter = pFrame->Field(ID3FN_COUNTER).Get();
             std::cout << nCounter << std::endl;
@@ -660,7 +665,7 @@ int main( int argc, char *argv[])
             size_t
               nCounter = pFrame->Field(ID3FN_COUNTER).Get(),
               nRating = pFrame->Field(ID3FN_RATING).Get();
-            std::cout << sEmail << ", counter=" 
+            std::cout << sEmail << ", counter="
                  << nCounter << " rating=" << nRating;
             delete [] sEmail;
           }
@@ -670,7 +675,7 @@ int main( int argc, char *argv[])
         case ID3FID_GROUPINGREG:
         {
           char *sOwner = ID3_GetString(myFrame, ID3FN_OWNER);
-          size_t 
+          size_t
             nSymbol = myFrame->Field(ID3FN_ID).Get(),
             nDataSize = myFrame->Field(ID3FN_DATA).Size();
           std::cout << "(" << nSymbol << "): " << sOwner
@@ -702,14 +707,14 @@ int main( int argc, char *argv[])
         }
       }
     }  // steping thru frames
-   
+
     luint nTags = myTag.Update(UpdFlags);
 
     /* update file with old mode */
-    if (chmod(argv[nIndex], filestat.st_mode)) 
+    if (chmod(argv[nIndex], filestat.st_mode))
     {
 	    std::cerr << "Couldn't reset permissions on '" << argv[nIndex] << "'\n";
-    }    
+    }
   }
 
   return 0;
