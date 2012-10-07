@@ -44,11 +44,6 @@ void DeleteSpecificTag(int argc, char *argv[], char* optarg, int optind, int whi
               }
           }
 
-          if (myFrameID == ID3FID_NOFRAME) {
-            std::cout << "\nFrame not implemented.\n" << std::endl;
-            exit(1);
-          }
-
           if (myFrame = myTag.Find(myFrameID))
           {
               myTag.RemoveFrame(myFrame);
