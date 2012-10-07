@@ -21,7 +21,7 @@ void DeleteSpecificTag(int argc, char *argv[], char* optarg, int optind, int whi
 
       ID3_Tag myTag;
 
-      std::cout << "Deleting id3 tag in \"";
+      std::cout << "Deleting id3v2 frame \"" << optarg << "\" in \"";
       std::cout << argv[nIndex] << "\"...";
 
       myTag.Clear();

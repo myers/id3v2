@@ -36,7 +36,7 @@ void PrintUsage(char *sName)
   std::cout << "  -v,  --version               Display version information and exit" << std::endl;
   std::cout << "  -l,  --list                  Lists the tag(s) on the file(s)" << std::endl;
   std::cout << "  -R,  --list-rfc822           Lists using an rfc822-style format for output" << std::endl;
-  std::cout << "  -x   --delete-frame \"FRAME\"  Deletes the id3v2 frame FRAME" << std::endl;
+  std::cout << "  -x   --delete-frame \"FRAME\"  Deletes the frame FRAME (id3v2 only)" << std::endl;
   std::cout << "  -d,  --delete-v2             Deletes id3v2 tags" << std::endl;
   std::cout << "  -s,  --delete-v1             Deletes id3v1 tags" << std::endl;
   std::cout << "  -D,  --delete-all            Deletes both id3v1 and id3v2 tags" << std::endl;
@@ -47,8 +47,8 @@ void PrintUsage(char *sName)
   std::cout << "  -A,  --album   \"ALBUM\"       Set the album title information" << std::endl;
   std::cout << "  -t,  --song    \"SONG\"        Set the song title information" << std::endl;
   std::cout << "  -c,  --comment \"DESCRIPTION\":\"COMMENT\":\"LANGUAGE\"  "<< std::endl
-       << "                               Set the comment information (both" << std::endl
-       << "                               description and language optional)" << std::endl;
+            << "                               Set the comment information (both" << std::endl
+            << "                               description and language optional)" << std::endl;
   std::cout << "  -g,  --genre   num           Set the genre number" << std::endl;
   std::cout << "  -y,  --year    num           Set the year" << std::endl;
   std::cout << "  -T,  --track   num/num       Set the track number/(optional) total tracks" << std::endl;
@@ -68,7 +68,7 @@ void PrintVersion(char *sName)
   std::cout << "Uses " << ID3LIB_FULL_NAME << std::endl << std::endl;
 
   std::cout << "This program adds/modifies/removes/views id3v2 tags, " << std::endl
-       << "and can convert from id3v1 tags" << std::endl;
+            << "and can convert from id3v1 tags" << std::endl;
 }
 
 
@@ -107,26 +107,21 @@ int main( int argc, char *argv[])
     static struct option long_options[] =
     {
     // help and info
-      { "help",    no_argument,       &iLongOpt, 'h' },
-      { "list-frames",
-                   no_argument,       &iLongOpt, 'f' },
-      { "list-genres",
-                  no_argument,        &iLongOpt, 'L' },
-      { "version", no_argument,       &iLongOpt, 'v' },
+      { "help",        no_argument,        &iLongOpt, 'h' },
+      { "list-frames", no_argument,        &iLongOpt, 'f' },
+      { "list-genres", no_argument,        &iLongOpt, 'L' },
+      { "version",     no_argument,        &iLongOpt, 'v' },
 
     // list / remove / convert
-      { "list",   no_argument,        &iLongOpt, 'l' },
-      { "list-rfc822",
-                   no_argument,       &iLongOpt, 'R' },
+      { "list",         no_argument,       &iLongOpt, 'l' },
+      { "list-rfc822",  no_argument,       &iLongOpt, 'R' },
       { "delete-frame", required_argument, &iLongOpt, 'x' },
-      { "delete-v2",  no_argument,    &iLongOpt, 'd' },
-      { "delete-v1",
-                   no_argument,       &iLongOpt, 's' },
-      { "delete-all",
-                   no_argument,       &iLongOpt, 'D' },
-      { "convert", no_argument,       &iLongOpt, 'C' },
-      { "id3v1-only", no_argument,       &iLongOpt, '1' },
-      { "id3v2-only", no_argument,       &iLongOpt, '2' },
+      { "delete-v2",    no_argument,       &iLongOpt, 'd' },
+      { "delete-v1",    no_argument,       &iLongOpt, 's' },
+      { "delete-all",   no_argument,       &iLongOpt, 'D' },
+      { "convert",      no_argument,       &iLongOpt, 'C' },
+      { "id3v1-only",   no_argument,       &iLongOpt, '1' },
+      { "id3v2-only",   no_argument,       &iLongOpt, '2' },
 
     // infomation to tag
       { "artist",  required_argument, &iLongOpt, 'a' },
@@ -212,7 +207,7 @@ int main( int argc, char *argv[])
       { "WXXX",    required_argument, &optFrameID, ID3FID_WWWUSER },
       { 0, 0, 0, 0 }
     };
-    iOpt = getopt_long (argc, argv, "12hfLvlRdsDCa:A:t:c:g:y:T:",
+    iOpt = getopt_long (argc, argv, "12hfLvlRx:dsDCa:A:t:c:g:y:T:",
                         long_options, &option_index);
 
     if (iOpt == -1  && argCounter == 0)
