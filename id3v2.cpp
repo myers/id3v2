@@ -600,8 +600,6 @@ int main( int argc, char *argv[])
         }
         case ID3FID_PICTURE:
         {
-          // Aggelos Kolatis (neoaggelos@gmail.com):
-          // Load image file into myFrame, then attach to myTag
           myFrame->Field(ID3FN_DATA).FromFile(frameList[ii].data);
           myTag.AttachFrame(myFrame);
           break;
