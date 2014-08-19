@@ -27,7 +27,7 @@ struct frameTbl {
   char *frameName;
   enum ID3_FrameID frameID;
   char *frameLongName;
-}; 
+};
 
 static struct frameTbl frameTable[] = {
   { "AENC", ID3FID_AUDIOCRYPTO,  	    "Audio encryption" },
@@ -84,7 +84,7 @@ static struct frameTbl frameTable[] = {
 	{ "TPOS", ID3FID_PARTINSET,         "Part of a set" },
 	{ "TPUB", ID3FID_PUBLISHER,         "Publisher" },
 	{ "TRCK", ID3FID_TRACKNUM,          "Track number/Position in set" },
-	{ "TRDA", ID3FID_RECORDINGDATES,    "Recording dates" }, 
+	{ "TRDA", ID3FID_RECORDINGDATES,    "Recording dates" },
 	{ "TRSN", ID3FID_NETRADIOSTATION,   "Internet radio station name" },
 	{ "TRSO", ID3FID_NETRADIOOWNER,     "Internet radio station owner" },
 	{ "TSIZ", ID3FID_SIZE,              "Size" },
@@ -108,7 +108,7 @@ static struct frameTbl frameTable[] = {
   { "????", ID3FID_NOFRAME,           "Error" }
 };
 
-int frameTableCount = 75;
+static int frameTableCount = 75;
 
 
 #endif /* __FRAMETABLE_H__ */
