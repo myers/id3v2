@@ -77,4 +77,8 @@ Warren Stevens <warren at catzooks.com>
 
 Roberto Costa <roberto.costa at ensta.org>	
 	Patch to fix id3 genres
-	
+
+Aggelos Kolaitis <neoaggelos at gmail.com>
+    'id3v2 --APIC image.jpg song.mp3' would not set the attached picture of the
+    mp3, just output information for the existing picture, if any. This has been
+    fixed.

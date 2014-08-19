@@ -600,19 +600,8 @@ int main( int argc, char *argv[])
         }
         case ID3FID_PICTURE:
         {
-          char
-            *sMimeType = ID3_GetString(myFrame, ID3FN_MIMETYPE),
-            *sDesc     = ID3_GetString(myFrame, ID3FN_DESCRIPTION),
-            *sFormat   = ID3_GetString(myFrame, ID3FN_IMAGEFORMAT);
-          size_t
-            nPicType   = myFrame->Field(ID3FN_PICTURETYPE).Get(),
-            nDataSize  = myFrame->Field(ID3FN_DATA).Size();
-          std::cout << "(" << sDesc << ")[" << sFormat << ", "
-               << nPicType << "]: " << sMimeType << ", " << nDataSize
-               << " bytes" << std::endl;
-          delete [] sMimeType;
-          delete [] sDesc;
-          delete [] sFormat;
+          myFrame->Field(ID3FN_DATA).FromFile(frameList[ii].data);
+          myTag.AttachFrame(myFrame);
           break;
         }
         case ID3FID_GENERALOBJECT:
