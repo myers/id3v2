@@ -26,7 +26,7 @@
 #include <string.h>
 
 
-char *genre_table[] = {"Blues",
+const char *genre_table[] = {"Blues",
                        "Classic Rock",
                        "Country",
                        "Dance",
